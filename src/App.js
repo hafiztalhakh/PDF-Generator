@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { saveAs } from 'file-server';
+import { saveAs } from 'file-saver';
 
 export default class App extends Component {
 
@@ -12,7 +12,12 @@ export default class App extends Component {
     }
 
     createPdf = () => {
-        axios.post('create-pdf', this.state)
+        axios.post('/create-pdf', this.state)
+            .then(() => axios.get('fetch-pdf', { responseType: 'blob' }))
+            .then(res => {
+                const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
+                saveAs(pdfBlob, 'new.pdf');
+            })
     }
 
     render() {
